@@ -16,6 +16,8 @@ interface Milestone {
   };
   completed: boolean;
   subtopics: string[];
+  mentor_skill_tag?: string;
+  resources?: { title: string; url: string; type: string }[];
 }
 
 interface LearningPathRoadmapProps {
@@ -40,7 +42,7 @@ export const LearningPathRoadmap = ({ milestones, onComplete }: LearningPathRoad
 
 const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -104,7 +106,7 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
               variant="outline"
               size="lg"
               className="rounded-2xl h-14 px-8 border-border/50 hover:border-primary/40 hover:bg-primary/5 group"
-              onClick={() => window.open(`/discover?skill=${milestone.title}`, "_blank")}
+              onClick={() => window.open(`/discover?skill=${encodeURIComponent(milestone.mentor_skill_tag || milestone.title)}`, "_blank")}
             >
               <User className="w-5 h-5 text-primary mr-3 transition-transform group-hover:scale-110" />
               <span className="text-sm font-bold">Connect with {milestone.mentor?.name || "Expert"}</span>
@@ -116,32 +118,32 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
         <div className="w-full md:w-64 bg-secondary/20 border-l border-border/30 p-8 flex flex-col justify-between relative overflow-hidden">
           <div className="space-y-6 relative z-10">
             <div className="flex flex-col items-center text-center space-y-4">
-               {milestone.completed ? (
-                 <div className="px-4 py-1.5 rounded-full bg-green-100 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-200">
-                    MASTERED
-                 </div>
-               ) : (
-                 <div className="px-4 py-1.5 rounded-full bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-widest border border-amber-200">
-                    IN PROGRESS
-                 </div>
-               )}
+              {milestone.completed ? (
+                <div className="px-4 py-1.5 rounded-full bg-green-100 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-200">
+                  MASTERED
+                </div>
+              ) : (
+                <div className="px-4 py-1.5 rounded-full bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-widest border border-amber-200">
+                  IN PROGRESS
+                </div>
+              )}
 
-               <div className="w-full space-y-2">
-                  <div className="h-1.5 w-full bg-white rounded-full overflow-hidden border border-border/30 shadow-inner">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: milestone.completed ? "100%" : "0%" }}
-                      className={`h-full ${milestone.completed ? "bg-green-500" : "bg-amber-400"}`}
-                    />
-                  </div>
-                  <p className="text-[10px] font-medium text-muted-foreground italic">
-                    {milestone.completed ? "Excellent work!" : "0% completion reached"}
-                  </p>
-               </div>
+              <div className="w-full space-y-2">
+                <div className="h-1.5 w-full bg-white rounded-full overflow-hidden border border-border/30 shadow-inner">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: milestone.completed ? "100%" : "0%" }}
+                    className={`h-full ${milestone.completed ? "bg-green-500" : "bg-amber-400"}`}
+                  />
+                </div>
+                <p className="text-[10px] font-medium text-muted-foreground italic">
+                  {milestone.completed ? "Excellent work!" : "0% completion reached"}
+                </p>
+              </div>
             </div>
 
             <p className="text-[11px] text-center text-muted-foreground/60 font-medium leading-relaxed">
-              {milestone.completed 
+              {milestone.completed
                 ? "You've successfully covered all subtopics for this milestone."
                 : "Complete all resources and subtopics to master this stage."}
             </p>
@@ -150,11 +152,10 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
           <div className="mt-8 relative z-10 w-full space-y-3">
             <Button
               onClick={onToggle}
-              className={`w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${
-                milestone.completed 
-                  ? "bg-white border-2 border-primary/20 text-primary hover:bg-primary/5" 
+              className={`w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${milestone.completed
+                  ? "bg-white border-2 border-primary/20 text-primary hover:bg-primary/5"
                   : "bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1"
-              }`}
+                }`}
             >
               {milestone.completed ? "Revoke Mastery" : "Complete Now"}
             </Button>
@@ -187,4 +188,3 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
     </motion.div>
   );
 };
-

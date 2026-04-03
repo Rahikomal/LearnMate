@@ -29,6 +29,19 @@ class MilestoneStatus(BaseModel):
 completion_state = {}
 my_paths = []
 
+# Mock users data (mirrors frontend mockData.ts)
+MOCK_USERS = [
+    {"id": "1", "name": "Hitesh", "skill": "React JS"},
+    {"id": "2", "name": "Komal", "skill": "Azure Functions"},
+    {"id": "3", "name": "Nandani", "skill": "Tailwind CSS"},
+    {"id": "4", "name": "Diya", "skill": "Tailwind CSS"},
+    {"id": "5", "name": "Raj", "skill": "TypeScript"},
+    {"id": "6", "name": "Nandani", "skill": "Python"},
+    {"id": "7", "name": "Dhvani", "skill": "AI"},
+]
+
+AVAILABLE_SKILLS = ["React JS", "TypeScript", "Python", "AI", "Tailwind CSS"]
+
 TRUSTED_RESOURCES = """
 ONLY use URLs from these exact trusted sources (use real, existing pages):
 
@@ -129,7 +142,6 @@ async def validate_topic(goal: str) -> dict:
         raw = response.choices[0].message.content
         return json.loads(raw)
     except Exception as e:
-        # If validation itself fails, be permissive and allow generation
         return {
             "is_valid": True,
             "confirmed_topic": goal,
@@ -207,8 +219,7 @@ Return ONLY valid JSON, no extra text, no markdown, no explanation:
                     status_code=500,
                     detail="Failed to generate path. Engine may be overloaded. " + str(e)
                 )
-    
-    # Fallback return to satisfy type checker (though raise above should cover it)
+
     return {}
 
 
@@ -222,12 +233,10 @@ async def generate_path(req: GoalRequest):
     # Step 1: Validate the topic
     validation = await validate_topic(goal)
 
-    # If invalid or low-confidence typo — return suggestion to frontend
     if not validation.get("is_valid", True):
         suggested = validation.get("suggested_topic", "").strip()
         reason = validation.get("reason", f"'{goal}' doesn't appear to be a recognized tech topic.")
 
-        # Has a suggestion (typo case like "Mojeco" → "Mojo")
         if suggested and suggested.lower() != goal.lower():
             raise HTTPException(
                 status_code=422,
@@ -239,7 +248,6 @@ async def generate_path(req: GoalRequest):
                 }
             )
         else:
-            # Completely unrelated (e.g. "cooking recipes")
             raise HTTPException(
                 status_code=400,
                 detail={
@@ -249,7 +257,6 @@ async def generate_path(req: GoalRequest):
                 }
             )
 
-    # Step 2: Use confirmed/corrected topic name for generation
     confirmed_topic = validation.get("confirmed_topic", goal)
     return await generate_roadmap(confirmed_topic)
 
@@ -277,3 +284,59 @@ async def delete_path(id: str):
     global my_paths
     my_paths = [p for p in my_paths if p.get("id") != id]
     return {"status": "success"}
+
+
+@app.get("/api/match/recommendations")
+async def get_match_recommendations(skill: str = ""):
+    """
+    AI-powered mentor matching. Given a learner's skill/topic,
+    rank the top 3 most relevant mentor skills from the platform
+    and return matching user IDs.
+    """
+    if not skill.strip():
+        return []
+
+    prompt = f"""You are a mentor matching engine. A learner needs help with: "{skill}"
+From this list of mentor skills: {json.dumps(AVAILABLE_SKILLS)}
+Rank the top 3 most relevant skills and return ONLY valid JSON:
+{{
+  "matches": [
+    {{"mentor_skill": "React JS", "score": 95, "reason": "Direct match"}},
+    {{"mentor_skill": "TypeScript", "score": 80, "reason": "Closely related"}},
+    {{"mentor_skill": "Python", "score": 60, "reason": "Foundational overlap"}}
+  ]
+}}"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1,
+            max_tokens=400,
+            response_format={"type": "json_object"}
+        )
+        raw = response.choices[0].message.content
+        data = json.loads(raw)
+        matches = data.get("matches", [])
+
+        # Map matched skills back to user IDs
+        results = []
+        for match in matches:
+            mentor_skill = match.get("mentor_skill", "")
+            score = match.get("score", 0)
+            reason = match.get("reason", "")
+
+            # Find users with this skill
+            matched_users = [u for u in MOCK_USERS if u["skill"] == mentor_skill]
+            for user in matched_users:
+                results.append({
+                    "mentor_id": user["id"],
+                    "score": score,
+                    "matched_skills": [mentor_skill],
+                    "reason": reason,
+                })
+
+        return results
+
+    except Exception:
+        return []

@@ -12,6 +12,7 @@ interface AIMatchCardProps {
   matchData: {
     score: number;
     matched_skills: string[];
+    reason?: string;
   };
   onConnect: (id: string, name: string) => void;
   status: any;
@@ -33,6 +34,14 @@ export const AIMatchCard = ({ user, index, matchData, onConnect, status }: AIMat
         <div className="absolute top-[1rem] left-[1rem] z-10">
           <MatchScoreBadge score={matchData.score} />
         </div>
+
+        {matchData.reason && (
+          <div className="w-full mb-2 px-[0.75rem] py-[0.5rem] rounded-[0.75rem] bg-primary/5 border border-primary/10">
+            <p className="text-[0.6875rem] text-primary/80 font-medium italic text-center leading-snug">
+              {matchData.reason}
+            </p>
+          </div>
+        )}
 
         <div className="w-full mb-6">
           <button
