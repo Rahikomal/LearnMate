@@ -1,0 +1,12 @@
+{
+  "source_directories": [
+    "."
+  ],
+  "search_path": [
+    "c:\\Users\\brqtsix821\\Desktop\\LearnMate\\backend\\venv\\Lib\\site-packages",
+    "c:\\users\\brqtsix821\\appdata\\local\\programs\\python\\python314\\lib\\site-packages",
+    "c:\\users\\brqtsix821\\appdata\\local\\programs\\python\\python314\\lib",
+    "c:\\users\\brqtsix821\\appdata\\local\\programs\\python\\python314\\DLLs"
+  ],
+  "site_package_path": "c:\\Users\\brqtsix821\\Desktop\\LearnMate\\backend\\venv\\Lib\\site-packages"
+}
