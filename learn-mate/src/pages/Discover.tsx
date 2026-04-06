@@ -76,17 +76,17 @@ const Discover = () => {
   return (
     <PageTransition>
       <div className="min-h-[calc(100vh-4rem)] relative">
-        <div className="container-custom py-[2rem] md:py-[4rem]">
-          <div className="flex flex-col items-center text-center mb-[4rem]">
+        <div className="container-custom py-[1.5rem] md:py-[3rem]">
+          <div className="flex flex-col items-center text-center mb-[3rem]">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="px-[1rem] py-[0.375rem] rounded-full bg-primary/10 text-primary text-[0.625rem] font-black uppercase tracking-[0.25em] border border-primary/20 mb-[1.5rem]"
+              className="px-[0.875rem] py-[0.3rem] rounded-full bg-primary/10 text-primary text-[0.625rem] font-black uppercase tracking-[0.25em] border border-primary/20 mb-[1.25rem]"
             >
-              <Sparkles className="w-[0.75rem] h-[0.75rem] inline-block mr-[0.375rem] mb-[0.125rem]" />
+              <Sparkles className="w-[0.7rem] h-[0.7rem] inline-block mr-[0.3rem] mb-[0.1rem]" />
               Mentors Community
             </motion.div>
-            <h1 className="font-display font-black text-[3rem] sm:text-[4rem] text-foreground tracking-tight leading-none m-0">
+            <h1 className="font-display font-black text-[2.25rem] sm:text-[3rem] text-foreground tracking-tight leading-none m-0">
               Discover Your Next <span className="text-primary italic">Mentor</span>
             </h1>
 
@@ -107,15 +107,15 @@ const Discover = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col lg:flex-row gap-[1rem] mb-[3rem] w-full"
+            className="flex flex-col lg:flex-row gap-[0.875rem] mb-[2.5rem] w-full"
           >
             <div className="relative flex-1">
-              <Search className="absolute left-[1rem] top-1/2 -translate-y-1/2 w-[1rem] h-[1rem] text-muted-foreground/60" />
+              <Search className="absolute left-[0.875rem] top-1/2 -translate-y-1/2 w-[0.875rem] h-[0.875rem] text-muted-foreground/60" />
               <Input
                 placeholder="Search by name or skill..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="pl-[2.75rem] h-[3.5rem] rounded-[1rem] bg-card/50 backdrop-blur-sm shadow-sm border-border/50 focus:ring-primary/20 transition-all font-medium"
+                className="pl-[2.5rem] h-[3rem] rounded-[0.875rem] bg-card/50 backdrop-blur-sm shadow-sm border-border/50 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
             {!isSmartMatch && (
@@ -124,7 +124,7 @@ const Discover = () => {
                   <button
                     key={f}
                     onClick={() => setActiveFilter(f)}
-                    className={`px-[1.5rem] h-[3.5rem] rounded-[1rem] text-[0.875rem] font-black uppercase tracking-wider whitespace-nowrap transition-all border ${activeFilter === f
+                    className={`px-[1.25rem] h-[3rem] rounded-[0.875rem] text-[0.8125rem] font-black uppercase tracking-wider whitespace-nowrap transition-all border ${activeFilter === f
                         ? "gradient-primary text-primary-foreground border-transparent shadow-lg shadow-primary/20"
                         : "bg-background/50 border-border/50 text-muted-foreground hover:bg-secondary/50 font-bold"
                       }`}

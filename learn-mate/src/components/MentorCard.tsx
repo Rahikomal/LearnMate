@@ -48,23 +48,23 @@ export const MentorCard = ({ user, index, onConnect, status, className, children
         )}
       </div>
 
-      <div className="relative mb-[1.5rem]">
-        <div className="w-[5rem] h-[5rem] rounded-full ring-[0.25rem] ring-background shadow-xl overflow-hidden group-hover:scale-110 transition-transform duration-500">
+      <div className="relative mb-[1.25rem]">
+        <div className="w-[4rem] h-[4rem] rounded-full ring-[0.25rem] ring-background shadow-xl overflow-hidden group-hover:scale-110 transition-transform duration-500">
            <Avatar className="w-full h-full">
               <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} alt={user.name} />
-              <AvatarFallback className="bg-primary/10 text-primary font-black text-[1.5rem]">{user.name[0]}</AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-primary font-black text-[1.25rem]">{user.name[0]}</AvatarFallback>
            </Avatar>
         </div>
-        <div className="absolute -bottom-[0.25rem] -right-[0.25rem] w-[1.5rem] h-[1.5rem] bg-green-500 border-[0.25rem] border-background rounded-full shadow-sm" title="Online" />
+        <div className="absolute -bottom-[0.25rem] -right-[0.25rem] w-[1.25rem] h-[1.25rem] bg-green-500 border-[0.25rem] border-background rounded-full shadow-sm" title="Online" />
       </div>
 
-      <h3 className="font-display font-bold text-[1.25rem] text-foreground group-hover:text-primary transition-colors leading-tight mb-[0.5rem] m-0 self-center">
+      <h3 className="font-display font-bold text-[1.125rem] text-foreground group-hover:text-primary transition-colors leading-tight mb-[0.375rem] m-0 self-center">
         {user.name}
       </h3>
       
-      <div className="inline-flex items-center justify-center gap-[0.375rem] px-[1rem] py-[0.375rem] rounded-[0.75rem] bg-secondary/30 mb-[1.5rem] w-fit">
-        <Tag className="w-[0.875rem] h-[0.875rem] text-primary" />
-        <span className="text-[0.6875rem] font-black uppercase tracking-[0.1em] text-muted-foreground">{user.skill}</span>
+      <div className="inline-flex items-center justify-center gap-[0.375rem] px-[0.875rem] py-[0.3rem] rounded-[0.75rem] bg-secondary/30 mb-[1.25rem] w-fit">
+        <Tag className="w-[0.75rem] h-[0.75rem] text-primary" />
+        <span className="text-[0.625rem] font-black uppercase tracking-[0.1em] text-muted-foreground">{user.skill}</span>
       </div>
 
       {children}
@@ -81,30 +81,30 @@ export const MentorCard = ({ user, index, onConnect, status, className, children
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-[0.75rem] mt-[2rem] w-full">
+      <div className="grid grid-cols-2 gap-[0.625rem] mt-[1.5rem] w-full">
         <button
           onClick={() => onConnect(user.id, user.name)}
           disabled={status === "connected"}
-          className={`flex items-center justify-center rounded-[1rem] text-[0.75rem] font-bold h-[2.75rem] border transition-all duration-300 ${
+          className={`flex items-center justify-center rounded-[0.875rem] text-[0.7rem] font-bold h-[2.5rem] border transition-all duration-300 ${
             status === "connected" 
               ? "bg-primary/5 border-primary/20 text-primary cursor-default" 
               : "border-border/50 hover:bg-primary/5 hover:border-primary/20 text-foreground"
           }`}
         >
           {status === "connected" ? (
-             <><Check className="w-[0.875rem] h-[0.875rem] mr-[0.375rem]" /> Connected</>
+             <><Check className="w-[0.75rem] h-[0.75rem] mr-[0.375rem]" /> Connected</>
           ) : status === "requested" ? (
-             <><Clock className="w-[0.875rem] h-[0.875rem] mr-[0.375rem]" /> Sent</>
+             <><Clock className="w-[0.75rem] h-[0.75rem] mr-[0.375rem]" /> Sent</>
           ) : (
-             <><UserPlus className="w-[0.875rem] h-[0.875rem] mr-[0.375rem]" /> Connect</>
+             <><UserPlus className="w-[0.75rem] h-[0.75rem] mr-[0.375rem]" /> Connect</>
           )}
         </button>
         <Button
           onClick={() => setBookingOpen(true)}
           size="sm"
-          className="rounded-[1rem] text-[0.75rem] font-bold gradient-primary text-primary-foreground h-[2.75rem] shadow-lg shadow-primary/20 hover:scale-[1.03] active:scale-95 transition-all"
+          className="rounded-[0.875rem] text-[0.7rem] font-bold gradient-primary text-primary-foreground h-[2.5rem] shadow-lg shadow-primary/20 hover:scale-[1.03] active:scale-95 transition-all"
         >
-          <Calendar className="w-[0.875rem] h-[0.875rem] mr-[0.375rem]" /> Book
+          <Calendar className="w-[0.75rem] h-[0.75rem] mr-[0.375rem]" /> Book
         </Button>
       </div>
 

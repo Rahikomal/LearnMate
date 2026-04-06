@@ -152,9 +152,9 @@ const LearningPath = () => {
           )}
         </AnimatePresence>
 
-        <div className="container-custom py-12 md:py-16 space-y-16">
+        <div className="container-custom py-10 md:py-14 space-y-12">
           {/* Saved Paths horizontal row */}
-          <section className="space-y-4">
+          <section className="space-y-3">
             <div className="flex items-center gap-3 px-2">
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">Saved pathways</span>
               <div className="h-px flex-1 bg-border/40" />
@@ -168,22 +168,22 @@ const LearningPath = () => {
           </section>
 
           {/* Main Dashboard */}
-          <div className="space-y-16">
+          <div className="space-y-12">
             {/* Hero Generator Strip */}
-            <div className="bg-gradient-to-br from-violet-50/50 to-white backdrop-blur-xl border border-primary/20 p-10 md:p-14 rounded-[3.5rem] shadow-2xl shadow-primary/5 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:rotate-12 transition-transform pointer-events-none">
-                <Brain className="w-48 h-48" />
+            <div className="bg-gradient-to-br from-violet-50/50 to-white backdrop-blur-xl border border-primary/20 p-7 md:p-10 rounded-[2.5rem] shadow-2xl shadow-primary/5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:rotate-12 transition-transform pointer-events-none">
+                <Brain className="w-36 h-36" />
               </div>
 
-              <div className="flex flex-col md:flex-row md:items-center gap-12 relative z-10">
-                <div className="flex-1 space-y-6">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-primary border border-primary/20">
-                    <Sparkles className="w-3.5 h-3.5" /> AI Engine
+              <div className="flex flex-col md:flex-row md:items-center gap-8 relative z-10">
+                <div className="flex-1 space-y-4">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-primary border border-primary/20">
+                    <Sparkles className="w-3 h-3" /> AI Engine
                   </div>
-                  <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-tight">
+                  <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
                     Generate Your <span className="text-primary italic">Roadmap</span>
                   </h1>
-                  <p className="text-base text-muted-foreground font-medium max-w-md">
+                  <p className="text-sm text-muted-foreground font-medium max-w-md">
                     Our AI architects a personalized path through our mentor community based on your dreams.
                   </p>
                 </div>
@@ -193,14 +193,14 @@ const LearningPath = () => {
                     placeholder="What's your growth goal?"
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
-                    className="h-16 pl-8 pr-[11rem] rounded-2xl bg-white/80 border-border/50 text-lg font-bold shadow-xl focus:ring-4 focus:ring-primary/20 transition-all group-hover:border-primary/40"
+                    className="h-14 pl-6 pr-[10rem] rounded-2xl bg-white/80 border-border/50 text-base font-bold shadow-xl focus:ring-4 focus:ring-primary/20 transition-all group-hover:border-primary/40"
                   />
                   <Button
                     onClick={() => generateMutation.mutate(goal)}
                     disabled={!goal || generateMutation.isPending}
-                    className="absolute right-2 top-2 bottom-2 rounded-xl px-6 bg-primary text-white font-black text-[11px] uppercase tracking-widest gap-2 shadow-lg shadow-primary/20 hover:scale-[1.03] transition-all"
+                    className="absolute right-2 top-2 bottom-2 rounded-xl px-5 bg-primary text-white font-black text-[11px] uppercase tracking-widest gap-2 shadow-lg shadow-primary/20 hover:scale-[1.03] transition-all"
                   >
-                    {generateMutation.isPending ? "Generating..." : <><Send className="w-4 h-4" /> Start Path</>}
+                    {generateMutation.isPending ? "Generating..." : <><Send className="w-3.5 h-3.5" /> Start Path</>}
                   </Button>
                 </div>
               </div>
@@ -220,14 +220,14 @@ const LearningPath = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="space-y-12"
+                  className="space-y-10"
                 >
-                  <div className="flex items-center gap-8 px-4">
-                    <div className="w-16 h-16 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
-                      <GraduationCap className="w-8 h-8" />
+                  <div className="flex items-center gap-6 px-4">
+                    <div className="w-12 h-12 rounded-[1.5rem] bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                      <GraduationCap className="w-6 h-6" />
                     </div>
                     <div className="flex flex-col">
-                      <h2 className="text-3xl md:text-4xl font-black text-foreground leading-tight">
+                      <h2 className="text-2xl md:text-3xl font-black text-foreground leading-tight">
                         {currentPath.title}
                       </h2>
                       <div className="flex items-center gap-2 mt-1">
@@ -243,9 +243,9 @@ const LearningPath = () => {
                   />
                 </motion.div>
               ) : (
-                <div className="text-center py-24 bg-secondary/5 rounded-[3.5rem] border-2 border-dashed border-border/50">
-                  <Compass className="w-20 h-20 mx-auto text-primary/10 mb-6" />
-                  <h3 className="text-xl font-bold text-muted-foreground">Select or generate a path to begin</h3>
+                <div className="text-center py-16 bg-secondary/5 rounded-[2.5rem] border-2 border-dashed border-border/50">
+                  <Compass className="w-14 h-14 mx-auto text-primary/10 mb-5" />
+                  <h3 className="text-lg font-bold text-muted-foreground">Select or generate a path to begin</h3>
                   <p className="text-muted-foreground/60 italic mt-2 text-sm">Your educational future starts with a single goal.</p>
                 </div>
               )}

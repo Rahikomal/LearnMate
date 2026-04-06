@@ -108,26 +108,26 @@ const Assessments = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-white selection:bg-primary/10">
-        <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="flex flex-col items-center text-center mb-20">
+        <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
+          <div className="flex flex-col items-center text-center mb-14">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-1 bg-violet-50 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-primary border border-primary/10 mb-6"
+              className="inline-flex items-center gap-2 px-3 py-1 bg-violet-50 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-primary border border-primary/10 mb-5"
             >
-              <Sparkles className="w-3.5 h-3.5" /> Skills Certification
+              <Sparkles className="w-3 h-3" /> Skills Certification
             </motion.div>
-            <h1 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.1] m-0">
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] m-0">
               Validate Your <span className="text-primary italic">Expertise</span>
             </h1>
-            <p className="text-lg text-slate-500 mt-6 max-w-2xl font-medium leading-relaxed">
+            <p className="text-base text-slate-500 mt-4 max-w-xl font-medium leading-relaxed">
               Take our structured assessments to earn industry-ready badges and showcase your skills to the LearnMate community.
             </p>
           </div>
 
           <AnimatePresence mode="wait">
             {AVAILABLE_SKILLS.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {AVAILABLE_SKILLS.map((skill, index) => {
                   const theme = SKILL_THEMES[skill] || { icon: Brain, color: "text-slate-600", bg: "bg-slate-50" };
                   const Icon = theme.icon;
@@ -138,25 +138,25 @@ const Assessments = () => {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
                       onClick={() => handleStart(skill)}
-                      className="group cursor-pointer bg-white border border-slate-200 rounded-[2.5rem] p-8 transition-all hover:shadow-2xl hover:shadow-slate-200/50 flex flex-col h-full"
+                      className="group cursor-pointer bg-white border border-slate-200 rounded-[2rem] p-6 transition-all hover:shadow-2xl hover:shadow-slate-200/50 flex flex-col h-full"
                     >
-                      <div className={`w-14 h-14 rounded-2xl ${theme.bg} ${theme.color} flex items-center justify-center mb-6 shadow-sm border border-black/5 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
-                        <Icon className="w-7 h-7" />
+                      <div className={`w-12 h-12 rounded-xl ${theme.bg} ${theme.color} flex items-center justify-center mb-5 shadow-sm border border-black/5 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                        <Icon className="w-6 h-6" />
                       </div>
                       
                       <div className="flex-1">
-                        <h3 className="text-2xl font-black text-slate-900 mb-2">{skill}</h3>
-                        <div className="flex items-center gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                          <span className="flex items-center gap-1.5"><Timer className="w-3.5 h-3.5" /> 10 Mins</span>
-                          <span className="flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5" /> {QUIZ_DATA[skill].length} Qs</span>
+                        <h3 className="text-xl font-black text-slate-900 mb-1.5">{skill}</h3>
+                        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          <span className="flex items-center gap-1"><Timer className="w-3 h-3" /> 10 Mins</span>
+                          <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> {QUIZ_DATA[skill].length} Qs</span>
                         </div>
                       </div>
 
-                      <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between group-hover:text-primary transition-colors">
-                        <span className="text-xs font-black uppercase tracking-widest">Begin Assessment</span>
-                        <ChevronRight className="w-5 h-5 translate-x-0 group-hover:translate-x-1 transition-transform" />
+                      <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between group-hover:text-primary transition-colors">
+                        <span className="text-[10px] font-black uppercase tracking-widest">Begin Assessment</span>
+                        <ChevronRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </motion.div>
                   );

@@ -27,7 +27,7 @@ interface LearningPathRoadmapProps {
 
 export const LearningPathRoadmap = ({ milestones, onComplete }: LearningPathRoadmapProps) => {
   return (
-    <div className="space-y-8 py-8 w-full max-w-5xl mx-auto">
+    <div className="space-y-6 py-6 w-full max-w-5xl mx-auto">
       {milestones.map((milestone, idx) => (
         <MilestoneCard
           key={milestone.id}
@@ -48,31 +48,31 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
       viewport={{ once: true }}
       className={`relative bg-white border border-border/50 rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-primary/5 ${milestone.completed ? "opacity-70 grayscale-[0.3]" : ""}`}
     >
-      <div className="flex flex-col md:flex-row min-h-[320px]">
+      <div className="flex flex-col md:flex-row min-h-[260px]">
         {/* Left Section: Information */}
-        <div className="flex-1 p-8 md:p-10 space-y-8">
-          <div className="flex items-start gap-6">
-            <span className="text-6xl font-mono font-black text-primary/5 select-none leading-none">0{idx + 1}</span>
+        <div className="flex-1 p-6 md:p-8 space-y-6">
+          <div className="flex items-start gap-4">
+            <span className="text-5xl font-mono font-black text-primary/5 select-none leading-none">0{idx + 1}</span>
             <div className="space-y-2">
-              <h3 className="text-2xl font-black text-foreground tracking-tight leading-tight">{milestone.title}</h3>
-              <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-secondary/50 rounded-full text-[10px] font-bold text-muted-foreground border border-border/50">
+              <h3 className="text-xl font-black text-foreground tracking-tight leading-tight">{milestone.title}</h3>
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-secondary/50 rounded-full text-[10px] font-bold text-muted-foreground border border-border/50">
                   <Clock className="w-3 h-3 text-primary" /> {milestone.duration}
                 </div>
-                <Badge variant={milestone.difficulty === "Expert" ? "destructive" : milestone.difficulty === "Intermediate" ? "default" : "secondary"} className="text-[10px] px-3 py-0.5 rounded-full font-bold">
+                <Badge variant={milestone.difficulty === "Expert" ? "destructive" : milestone.difficulty === "Intermediate" ? "default" : "secondary"} className="text-[10px] px-2.5 py-0.5 rounded-full font-bold">
                   {milestone.difficulty}
                 </Badge>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-              <Compass className="w-3.5 h-3.5 text-primary" /> Core Subtopics
+              <Compass className="w-3 h-3 text-primary" /> Core Subtopics
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {milestone.subtopics?.map((sub: string) => (
-                <span key={sub} className="px-3 py-1.5 rounded-xl bg-secondary/30 border border-border/50 text-[11px] font-bold text-foreground/70 hover:border-primary/30 hover:bg-white transition-all">
+                <span key={sub} className="px-2.5 py-1 rounded-lg bg-secondary/30 border border-border/50 text-[10px] font-bold text-foreground/70 hover:border-primary/30 hover:bg-white transition-all">
                   {sub}
                 </span>
               ))}
@@ -80,44 +80,44 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
           </div>
 
           {milestone.resources && milestone.resources.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-                <BookOpen className="w-3.5 h-3.5 text-primary" /> Recommended Resources
+                <BookOpen className="w-3 h-3 text-primary" /> Recommended Resources
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {milestone.resources.map((res: any, rIdx: number) => (
                   <a
                     key={rIdx}
                     href={res.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col p-4 rounded-2xl bg-primary/5 border border-primary/10 hover:border-primary/30 hover:bg-white transition-all group/res"
+                    className="flex flex-col p-3 rounded-xl bg-primary/5 border border-primary/10 hover:border-primary/30 hover:bg-white transition-all group/res"
                   >
                     <span className="text-xs font-bold text-foreground line-clamp-1 group-hover/res:text-primary transition-colors">{res.title}</span>
-                    <span className="text-[9px] font-mono font-black uppercase text-primary/40 mt-1">{res.type}</span>
+                    <span className="text-[9px] font-mono font-black uppercase text-primary/40 mt-0.5">{res.type}</span>
                   </a>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="pt-4">
+          <div className="pt-2">
             <Button
               variant="outline"
-              size="lg"
-              className="rounded-2xl h-14 px-8 border-border/50 hover:border-primary/40 hover:bg-primary/5 group"
+              size="sm"
+              className="rounded-xl h-10 px-5 border-border/50 hover:border-primary/40 hover:bg-primary/5 group"
               onClick={() => window.open(`/discover?skill=${encodeURIComponent(milestone.mentor_skill_tag || milestone.title)}`, "_blank")}
             >
-              <User className="w-5 h-5 text-primary mr-3 transition-transform group-hover:scale-110" />
-              <span className="text-sm font-bold">Connect with {milestone.mentor?.name || "Expert"}</span>
+              <User className="w-4 h-4 text-primary mr-2 transition-transform group-hover:scale-110" />
+              <span className="text-xs font-bold">Connect with {milestone.mentor?.name || "Expert"}</span>
             </Button>
           </div>
         </div>
 
         {/* Right Section: Status Panel */}
-        <div className="w-full md:w-64 bg-secondary/20 border-l border-border/30 p-8 flex flex-col justify-between relative overflow-hidden">
-          <div className="space-y-6 relative z-10">
-            <div className="flex flex-col items-center text-center space-y-4">
+        <div className="w-full md:w-56 bg-secondary/20 border-l border-border/30 p-6 flex flex-col justify-between relative overflow-hidden">
+          <div className="space-y-5 relative z-10">
+            <div className="flex flex-col items-center text-center space-y-3">
               {milestone.completed ? (
                 <div className="px-4 py-1.5 rounded-full bg-green-100 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-200">
                   MASTERED
@@ -149,10 +149,10 @@ const MilestoneCard = ({ milestone, idx, onToggle }: any) => {
             </p>
           </div>
 
-          <div className="mt-8 relative z-10 w-full space-y-3">
+          <div className="mt-6 relative z-10 w-full space-y-3">
             <Button
               onClick={onToggle}
-              className={`w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${milestone.completed
+              className={`w-full h-10 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${milestone.completed
                   ? "bg-white border-2 border-primary/20 text-primary hover:bg-primary/5"
                   : "bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1"
                 }`}

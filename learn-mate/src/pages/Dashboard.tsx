@@ -43,20 +43,20 @@ const Dashboard = () => {
   return (
     <PageTransition>
       <div className="min-h-[calc(100vh-4rem)] bg-background relative selection:bg-primary/20">
-        <div className="container-custom py-[1.5rem] md:py-[2.5rem]">
-          <header className="flex flex-col md:flex-row md:items-end justify-between mb-[1.5rem] gap-[1rem]">
+        <div className="container-custom py-[1.25rem] md:py-[2rem]">
+          <header className="flex flex-col md:flex-row md:items-end justify-between mb-[1.25rem] gap-[0.875rem]">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-[0.25rem]"
             >
-              <div className="inline-flex items-center gap-[0.5rem] px-[0.75rem] py-[0.25rem] rounded-full bg-primary/10 text-primary text-[0.75rem] font-bold border border-primary/20 mb-[0.5rem]">
-                <TrendingUp className="w-[0.75rem] h-[0.75rem]" /> Dashboard Overview
+              <div className="inline-flex items-center gap-[0.5rem] px-[0.625rem] py-[0.2rem] rounded-full bg-primary/10 text-primary text-[0.7rem] font-bold border border-primary/20 mb-[0.375rem]">
+                <TrendingUp className="w-[0.7rem] h-[0.7rem]" /> Dashboard Overview
               </div>
-              <h1 className="font-display font-bold text-[2rem] sm:text-[2.5rem] text-foreground tracking-tight leading-tight">
+              <h1 className="font-display font-bold text-[1.625rem] sm:text-[2rem] text-foreground tracking-tight leading-tight">
                 Welcome back, {currentUser.name.split(' ')[0]}!
               </h1>
-              <p className="text-muted-foreground text-[0.875rem] sm:text-[1rem] max-w-[28rem]">
+              <p className="text-muted-foreground text-[0.8125rem] sm:text-[0.9375rem] max-w-[28rem]">
                 Here's what's happening with your learning journey today.
               </p>
             </motion.div>
@@ -97,15 +97,15 @@ const Dashboard = () => {
               >
                 <div className="flex-1 min-w-0 space-y-[1.5rem]">
                   <div className="grid-adaptive">
-                    <motion.div variants={itemVariants} className="glass rounded-[2rem] p-[1.5rem] relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 p-[2rem] opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
-                        <GraduationCap className="w-[8rem] h-[8rem] rotate-12" />
+                    <motion.div variants={itemVariants} className="glass rounded-[1.5rem] p-[1.25rem] relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-[1.5rem] opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
+                        <GraduationCap className="w-[6rem] h-[6rem] rotate-12" />
                       </div>
-                      <div className="flex items-center gap-[0.75rem] mb-[1.5rem]">
-                        <div className="p-[0.625rem] rounded-[0.75rem] bg-primary/10 text-primary">
-                          <GraduationCap className="w-[1.25rem] h-[1.25rem]" />
+                      <div className="flex items-center gap-[0.625rem] mb-[1.25rem]">
+                        <div className="p-[0.5rem] rounded-[0.625rem] bg-primary/10 text-primary">
+                          <GraduationCap className="w-[1rem] h-[1rem]" />
                         </div>
-                        <h2 className="font-display font-bold text-[1.25rem] text-foreground">Your Skills</h2>
+                        <h2 className="font-display font-bold text-[1.125rem] text-foreground">Your Skills</h2>
                       </div>
                       <div className="space-y-[1.5rem]">
                         <div>
@@ -131,15 +131,15 @@ const Dashboard = () => {
                       </div>
                     </motion.div>
 
-                    <motion.div variants={itemVariants} className="glass rounded-[2rem] p-[1.5rem] relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 p-[2rem] opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
-                        <Users className="w-[8rem] h-[8rem] -rotate-12" />
+                    <motion.div variants={itemVariants} className="glass rounded-[1.5rem] p-[1.25rem] relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-[1.5rem] opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
+                        <Users className="w-[6rem] h-[6rem] -rotate-12" />
                       </div>
-                      <div className="flex items-center gap-[0.75rem] mb-[1.5rem]">
-                        <div className="p-[0.625rem] rounded-[0.75rem] bg-primary/10 text-primary">
-                          <Handshake className="w-[1.25rem] h-[1.25rem]" />
+                      <div className="flex items-center gap-[0.625rem] mb-[1.25rem]">
+                        <div className="p-[0.5rem] rounded-[0.625rem] bg-primary/10 text-primary">
+                          <Handshake className="w-[1rem] h-[1rem]" />
                         </div>
-                        <h2 className="font-display font-bold text-[1.25rem] text-foreground">Connections</h2>
+                        <h2 className="font-display font-bold text-[1.125rem] text-foreground">Connections</h2>
                       </div>
                       <div className="space-y-[0.75rem]">
                         {connections.slice(0, 3).map((c) => (
