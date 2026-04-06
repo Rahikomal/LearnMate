@@ -38,7 +38,7 @@ export const MatchExplainerDrawer = ({ open, onClose, mentorId, mentorName }: Ma
             <div className="p-2 bg-primary/10 rounded-xl text-primary">
               <Brain className="w-6 h-6" />
             </div>
-            <SheetTitle className="text-2xl font-display font-bold">AI Match Insights</SheetTitle>
+            <SheetTitle className="text-2xl font-display font-bold">Match Insights</SheetTitle>
           </div>
           <SheetDescription className="text-muted-foreground italic">
             Visual breakdown of how your learning goals align with {mentorName}'s expertise.
@@ -90,7 +90,7 @@ export const MatchExplainerDrawer = ({ open, onClose, mentorId, mentorName }: Ma
                 <Link2 className="w-5 h-5 text-primary" /> Key Connection
               </h4>
               <p className="text-[0.875rem] text-muted-foreground leading-relaxed italic">
-                The AI detected a strong alignment in <span className="text-primary font-bold">{explanation.matched_pairs[0]?.[0]}</span>. 
+                The system detected a strong alignment in <span className="text-primary font-bold">{explanation.matched_pairs[0]?.[0]}</span>. 
                 This mentor's specific approach to teaching this skill matches your current learning velocity.
               </p>
             </div>

@@ -29,7 +29,7 @@ const Discover = () => {
     }
   }, [skillFromPath]);
 
-  const filters = ["All", "React JS", "Tailwind CSS", "TypeScript", "Python", "AI"];
+  const filters = ["All", "React JS", "Tailwind CSS", "TypeScript", "Python", "Machine Learning"];
 
   const { data: recommendations = [], isLoading: loadingRecommendations } = useQuery({
     queryKey: ["match-recommendations", skillFromPath],
@@ -98,7 +98,7 @@ const Discover = () => {
               />
               <span className={`text-[0.875rem] font-black uppercase tracking-[0.1em] transition-colors duration-300 ${isSmartMatch ? "text-primary" : "text-muted-foreground"}`}>
                 <BrainCircuit className="w-5 h-5 inline-block mr-2 -mt-1" />
-                AI Smart Match
+                Smart Match
               </span>
             </div>
           </div>

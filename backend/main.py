@@ -26,21 +26,26 @@ class GoalRequest(BaseModel):
 class MilestoneStatus(BaseModel):
     completed: bool
 
+class QuizRequest(BaseModel):
+    skill: str
+    difficulty: str = "mixed"   # beginner | intermediate | expert | mixed
+    count: int = 10              # number of questions (5–15)
+
 completion_state = {}
 my_paths = []
 
 # Mock users data (mirrors frontend mockData.ts)
 MOCK_USERS = [
-    {"id": "1", "name": "Hitesh", "skill": "React JS"},
-    {"id": "2", "name": "Komal", "skill": "Azure Functions"},
+    {"id": "1", "name": "Hitesh",  "skill": "React JS"},
+    {"id": "2", "name": "Komal",   "skill": "Azure Functions"},
     {"id": "3", "name": "Nandani", "skill": "Tailwind CSS"},
-    {"id": "4", "name": "Diya", "skill": "Tailwind CSS"},
-    {"id": "5", "name": "Raj", "skill": "TypeScript"},
+    {"id": "4", "name": "Diya",    "skill": "Tailwind CSS"},
+    {"id": "5", "name": "Raj",     "skill": "TypeScript"},
     {"id": "6", "name": "Nandani", "skill": "Python"},
-    {"id": "7", "name": "Dhvani", "skill": "AI"},
+    {"id": "7", "name": "Dhvani",  "skill": "Machine Learning"},
 ]
 
-AVAILABLE_SKILLS = ["React JS", "TypeScript", "Python", "AI", "Tailwind CSS"]
+AVAILABLE_SKILLS = ["React JS", "TypeScript", "Python", "Machine Learning", "Tailwind CSS"]
 
 TRUSTED_RESOURCES = """
 ONLY use URLs from these exact trusted sources (use real, existing pages):
@@ -106,7 +111,7 @@ Your job is to analyze a user's learning goal and determine:
 3. If it is completely unrelated to technology or software learning, mark it invalid.
 
 Rules:
-- "Mojeco" → invalid, suggest "Mojo" (AI/ML language by Modular)
+- "Mojeco" → invalid, suggest "Mojo" (Machine Learning language by Modular)
 - "Reakt" → invalid, suggest "React"
 - "Python" → valid
 - "cooking recipes" → invalid, no suggestion
@@ -126,6 +131,190 @@ Return format:
 }"""
 
 
+# ─── Quiz Generation ─────────────────────────────────────────────────────────
+
+QUIZ_SYSTEM_PROMPT = """You are an expert technical quiz generator for a developer learning platform.
+
+Your task is to generate high-quality, challenging multiple-choice questions (MCQs) for a given skill.
+
+Rules:
+1. Every question MUST be directly related to the requested skill — no tangential topics.
+2. Questions must span practical usage, edge cases, best practices, and conceptual understanding.
+3. Each question has exactly 4 options (A, B, C, D).
+4. Only ONE option is correct. The others must be plausible but clearly wrong to an expert.
+5. Difficulty distribution when "mixed": ~30% beginner, ~40% intermediate, ~30% expert.
+6. NEVER repeat questions. Each question must test a distinct concept.
+7. The correctAnswer field must EXACTLY match one of the strings in the options array.
+8. Return ONLY raw JSON — no markdown, no explanation, no preamble.
+
+Return format:
+{
+  "skill": "React JS",
+  "total": 10,
+  "estimated_minutes": 12,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mcq",
+      "difficulty": "beginner | intermediate | expert",
+      "topic": "short topic label e.g. Hooks, State, Performance",
+      "text": "Full question text here?",
+      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
+      "correctAnswer": "Option A text",
+      "explanation": "One sentence explaining why this is correct and why the others are wrong."
+    }
+  ]
+}"""
+
+
+@app.post("/api/quiz/generate")
+async def generate_quiz(req: QuizRequest):
+    """
+    Generate dynamic MCQ quiz questions for a given skill using Groq.
+    Questions are fresh on every call — no caching, no static data.
+    """
+    skill = req.skill.strip()
+    if not skill:
+        raise HTTPException(status_code=400, detail="Skill cannot be empty.")
+
+    count = max(5, min(15, req.count))  # clamp between 5 and 15
+    difficulty = req.difficulty if req.difficulty in ("beginner", "intermediate", "expert", "mixed") else "mixed"
+
+    user_prompt = f"""Generate {count} MCQ questions for the skill: "{skill}".
+Difficulty mode: {difficulty}.
+Make the questions progressively harder. Cover diverse subtopics within {skill}.
+Focus on real-world usage, gotchas, and best practices — not just definitions.
+Return exactly {count} questions in the JSON format specified."""
+
+    for attempt in range(2):
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content": QUIZ_SYSTEM_PROMPT},
+                    {"role": "user",   "content": user_prompt},
+                ],
+                temperature=0.7,   # some variation so questions differ each call
+                max_tokens=4000,
+                response_format={"type": "json_object"},
+            )
+            raw = response.choices[0].message.content
+            data = json.loads(raw)
+
+            # Validate minimal structure
+            questions = data.get("questions", [])
+            if not questions:
+                raise ValueError("Server returned no questions.")
+
+            # Ensure IDs are unique strings and correctAnswer is present
+            for i, q in enumerate(questions):
+                q["id"] = q.get("id") or f"q{i + 1}"
+                if "correctAnswer" not in q or q["correctAnswer"] not in q.get("options", []):
+                    # If AI messed up the answer, fall back to first option (edge case)
+                    q["correctAnswer"] = q.get("options", [""])[0]
+
+            data["questions"] = questions
+            data["skill"] = skill
+            data["total"] = len(questions)
+            data.setdefault("estimated_minutes", round(len(questions) * 1.2))
+
+            return data
+
+        except json.JSONDecodeError as e:
+            if attempt == 1:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Server returned malformed JSON. Please try again. ({str(e)})"
+                )
+        except Exception as e:
+            if attempt == 1:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Quiz generation failed: {str(e)}"
+                )
+
+    raise HTTPException(status_code=500, detail="Assessment engine error. Please try again.")
+
+
+# ─── Quiz Submission & Scoring ───────────────────────────────────────────────
+
+class QuizAnswer(BaseModel):
+    questionId: str
+    answer: str
+
+class QuizSubmission(BaseModel):
+    skill: str
+    answers: list[QuizAnswer]
+    questions: list[dict]   # the full question objects (sent back from client)
+
+@app.post("/api/quiz/submit")
+async def submit_quiz(submission: QuizSubmission):
+    """
+    Score a completed quiz. The client sends back the original questions
+    (with correctAnswer) and the user's answers. Returns detailed results.
+    """
+    question_map = {q["id"]: q for q in submission.questions}
+    review = []
+
+    for ans in submission.answers:
+        q = question_map.get(ans.questionId)
+        if not q:
+            continue
+        is_correct = ans.answer == q.get("correctAnswer", "")
+        review.append({
+            "question":      q.get("text", ""),
+            "topic":         q.get("topic", "General"),
+            "difficulty":    q.get("difficulty", "intermediate"),
+            "userAnswer":    ans.answer,
+            "correctAnswer": q.get("correctAnswer", ""),
+            "correct":       is_correct,
+            "explanation":   q.get("explanation", ""),
+        })
+
+    total    = len(review)
+    correct  = sum(1 for r in review if r["correct"])
+    score    = round((correct / total) * 100) if total > 0 else 0
+
+    if score >= 85:
+        badge = "Expert"
+    elif score >= 65:
+        badge = "Intermediate"
+    else:
+        badge = "Beginner"
+
+    # Topic-level breakdown
+    topic_stats: dict[str, dict] = {}
+    for r in review:
+        t = r["topic"]
+        if t not in topic_stats:
+            topic_stats[t] = {"correct": 0, "total": 0}
+        topic_stats[t]["total"] += 1
+        if r["correct"]:
+            topic_stats[t]["correct"] += 1
+
+    topic_breakdown = [
+        {
+            "topic":   t,
+            "correct": v["correct"],
+            "total":   v["total"],
+            "pct":     round((v["correct"] / v["total"]) * 100),
+        }
+        for t, v in topic_stats.items()
+    ]
+
+    return {
+        "skill":           submission.skill,
+        "score":           score,
+        "correct":         correct,
+        "total":           total,
+        "badge":           badge,
+        "topic_breakdown": topic_breakdown,
+        "explanations":    review,
+    }
+
+
+# ─── Learning Path ────────────────────────────────────────────────────────────
+
 async def validate_topic(goal: str) -> dict:
     """Step 1: Validate if the goal is a real tech topic using Groq."""
     try:
@@ -133,21 +322,21 @@ async def validate_topic(goal: str) -> dict:
             model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": VALIDATION_SYSTEM_PROMPT},
-                {"role": "user", "content": f'User wants to learn: "{goal}"'}
+                {"role": "user",   "content": f'User wants to learn: "{goal}"'},
             ],
             temperature=0.1,
             max_tokens=300,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
         raw = response.choices[0].message.content
         return json.loads(raw)
-    except Exception as e:
+    except Exception:
         return {
-            "is_valid": True,
+            "is_valid":        True,
             "confirmed_topic": goal,
             "suggested_topic": goal,
-            "confidence": "low",
-            "reason": "Validation check skipped due to an error."
+            "confidence":      "low",
+            "reason":          "Validation check skipped due to an error.",
         }
 
 
@@ -159,9 +348,9 @@ You are a learning roadmap expert. The user wants to learn: "{confirmed_topic}"
 CRITICAL RULES FOR URLs:
 1. NEVER invent or fabricate URLs. Every URL must exist and be publicly accessible.
 2. Use ONLY URLs from the trusted sources listed below — do not use any other domain.
-3. For YouTube, always link to a channel's /videos or /playlists page — NEVER link to individual videos (those change).
+3. For YouTube, always link to a channel's /videos or /playlists page — NEVER link to individual videos.
 4. For documentation, link to the actual section page, not just the homepage.
-5. Provide 2–3 resources per milestone, each from a different source type (e.g. one docs, one video, one course).
+5. Provide 2–3 resources per milestone, each from a different source type.
 6. Double-check: if you are not 100% sure a URL exists, use the channel/section root instead.
 
 {TRUSTED_RESOURCES}
@@ -189,7 +378,6 @@ Return ONLY valid JSON, no extra text, no markdown, no explanation:
   ]
 }}
 """
-
     for attempt in range(2):
         try:
             response = client.chat.completions.create(
@@ -197,17 +385,17 @@ Return ONLY valid JSON, no extra text, no markdown, no explanation:
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.2,
                 max_tokens=2000,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
             )
-            raw = response.choices[0].message.content
+            raw  = response.choices[0].message.content
             data = json.loads(raw)
 
-            path_id = f"path-{len(my_paths) + 1}"
+            path_id  = f"path-{len(my_paths) + 1}"
             data["id"] = path_id
 
             for i, milestone in enumerate(data.get("milestones", [])):
                 m_id = f"m-{path_id}-{i}"
-                milestone["id"] = m_id
+                milestone["id"]        = m_id
                 milestone["completed"] = False
 
             my_paths.append(data)
@@ -217,7 +405,7 @@ Return ONLY valid JSON, no extra text, no markdown, no explanation:
             if attempt == 1:
                 raise HTTPException(
                     status_code=500,
-                    detail="Failed to generate path. Engine may be overloaded. " + str(e)
+                    detail="Failed to generate path. Engine may be overloaded. " + str(e),
                 )
 
     return {}
@@ -226,35 +414,33 @@ Return ONLY valid JSON, no extra text, no markdown, no explanation:
 @app.post("/api/learning-path/generate")
 async def generate_path(req: GoalRequest):
     goal = req.goal.strip()
-
     if not goal:
         raise HTTPException(status_code=400, detail="Goal cannot be empty.")
 
-    # Step 1: Validate the topic
     validation = await validate_topic(goal)
 
     if not validation.get("is_valid", True):
         suggested = validation.get("suggested_topic", "").strip()
-        reason = validation.get("reason", f"'{goal}' doesn't appear to be a recognized tech topic.")
+        reason    = validation.get("reason", f"'{goal}' doesn't appear to be a recognized tech topic.")
 
         if suggested and suggested.lower() != goal.lower():
             raise HTTPException(
                 status_code=422,
                 detail={
-                    "type": "suggestion",
-                    "original_goal": goal,
+                    "type":            "suggestion",
+                    "original_goal":   goal,
                     "suggested_topic": suggested,
-                    "message": reason
-                }
+                    "message":         reason,
+                },
             )
         else:
             raise HTTPException(
                 status_code=400,
                 detail={
-                    "type": "unrelated",
+                    "type":          "unrelated",
                     "original_goal": goal,
-                    "message": f"'{goal}' doesn't seem to be a tech or software learning topic. Try something like 'React', 'Python', or 'Machine Learning'."
-                }
+                    "message":       f"'{goal}' doesn't seem to be a tech or software learning topic. Try something like 'React', 'Python', or 'Machine Learning'.",
+                },
             )
 
     confirmed_topic = validation.get("confirmed_topic", goal)
@@ -286,13 +472,10 @@ async def delete_path(id: str):
     return {"status": "success"}
 
 
+# ─── Mentor Matching ───────────────────────────────────────────────────────
+
 @app.get("/api/match/recommendations")
 async def get_match_recommendations(skill: str = ""):
-    """
-    AI-powered mentor matching. Given a learner's skill/topic,
-    rank the top 3 most relevant mentor skills from the platform
-    and return matching user IDs.
-    """
     if not skill.strip():
         return []
 
@@ -313,27 +496,24 @@ Rank the top 3 most relevant skills and return ONLY valid JSON:
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
             max_tokens=400,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
-        raw = response.choices[0].message.content
-        data = json.loads(raw)
+        raw     = response.choices[0].message.content
+        data    = json.loads(raw)
         matches = data.get("matches", [])
 
-        # Map matched skills back to user IDs
         results = []
         for match in matches:
-            mentor_skill = match.get("mentor_skill", "")
-            score = match.get("score", 0)
-            reason = match.get("reason", "")
-
-            # Find users with this skill
+            mentor_skill  = match.get("mentor_skill", "")
+            score         = match.get("score", 0)
+            reason        = match.get("reason", "")
             matched_users = [u for u in MOCK_USERS if u["skill"] == mentor_skill]
             for user in matched_users:
                 results.append({
-                    "mentor_id": user["id"],
-                    "score": score,
+                    "mentor_id":      user["id"],
+                    "score":          score,
                     "matched_skills": [mentor_skill],
-                    "reason": reason,
+                    "reason":         reason,
                 })
 
         return results

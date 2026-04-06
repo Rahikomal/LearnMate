@@ -178,13 +178,13 @@ const LearningPath = () => {
               <div className="flex flex-col md:flex-row md:items-center gap-8 relative z-10">
                 <div className="flex-1 space-y-4">
                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-primary border border-primary/20">
-                    <Sparkles className="w-3 h-3" /> AI Engine
+                    <Sparkles className="w-3 h-3" /> Roadmap Engine
                   </div>
                   <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
                     Generate Your <span className="text-primary italic">Roadmap</span>
                   </h1>
                   <p className="text-sm text-muted-foreground font-medium max-w-md">
-                    Our AI architects a personalized path through our mentor community based on your dreams.
+                    Our system architects a personalized path through our mentor community based on your dreams.
                   </p>
                 </div>
 
