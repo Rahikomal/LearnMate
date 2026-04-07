@@ -1,5 +1,7 @@
 import os
 import json
+from typing import Any, Dict, List
+from collections import defaultdict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -18,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY2"))
 
 class GoalRequest(BaseModel):
     goal: str
@@ -31,8 +33,57 @@ class QuizRequest(BaseModel):
     difficulty: str = "mixed"   # beginner | intermediate | expert | mixed
     count: int = 10              # number of questions (5–15)
 
+# ─── Group Models ─────────────────────────────────────────────────────────────
+
+class GroupCreate(BaseModel):
+    name: str
+    description: str | None = None
+    skill_tag: str
+
+class PostCreate(BaseModel):
+    content: str
+
+# ─── In-memory state ──────────────────────────────────────────────────────────
+
 completion_state = {}
-my_paths = []
+my_paths: List[Dict[str, Any]] = []
+
+# Mock groups
+GROUPS: List[Dict[str, Any]] = [
+    {
+        "id": 1,
+        "name": "React Architects",
+        "description": "Deep dive into React 19 and advanced patterns.",
+        "skill_tag": "React JS",
+        "creator_id": 1,
+        "member_count": 124,
+        "created_at": "2024-03-01T12:00:00Z"
+    },
+    {
+        "id": 2,
+        "name": "Pythonistas India",
+        "description": "Building scalable microservices with Fast API and Django.",
+        "skill_tag": "Python",
+        "creator_id": 2,
+        "member_count": 89,
+        "created_at": "2024-03-05T12:00:00Z"
+    },
+    {
+        "id": 3,
+        "name": "Design Systems Enthusiasts",
+        "description": "Creating robust, accessible UI components with Tailwind.",
+        "skill_tag": "Tailwind CSS",
+        "creator_id": 3,
+        "member_count": 210,
+        "created_at": "2024-03-10T12:00:00Z"
+    }
+]
+
+GROUP_MEMBERSHIPS = {} # group_id -> set of user_ids (mock)
+GROUP_POSTS: Dict[int, List[Dict[str, Any]]] = {}      # group_id -> list of posts
+
+# Mock current user ID (demo constant)
+CURRENT_USER_ID = 101
 
 # Mock users data (mirrors frontend mockData.ts)
 MOCK_USERS = [
@@ -283,11 +334,9 @@ async def submit_quiz(submission: QuizSubmission):
         badge = "Beginner"
 
     # Topic-level breakdown
-    topic_stats: dict[str, dict] = {}
+    topic_stats = defaultdict(lambda: {"correct": 0, "total": 0})
     for r in review:
-        t = r["topic"]
-        if t not in topic_stats:
-            topic_stats[t] = {"correct": 0, "total": 0}
+        t = str(r["topic"])
         topic_stats[t]["total"] += 1
         if r["correct"]:
             topic_stats[t]["correct"] += 1
@@ -520,3 +569,76 @@ Rank the top 3 most relevant skills and return ONLY valid JSON:
 
     except Exception:
         return []
+
+# ─── Community Groups ─────────────────────────────────────────────────────────
+
+@app.get("/api/v1/groups/")
+async def list_groups(skill: str | None = None):
+    if skill:
+        return [g for g in GROUPS if str(g["skill_tag"]).lower() == skill.lower()]
+    return GROUPS
+
+@app.get("/api/v1/groups/popular")
+async def get_popular_groups():
+    sorted_groups = sorted(GROUPS, key=lambda x: int(x["member_count"]), reverse=True)
+    return [sorted_groups[i] for i in range(min(3, len(sorted_groups)))]
+
+@app.post("/api/v1/groups/")
+async def create_group(data: GroupCreate):
+    new_group: Dict[str, Any] = {
+        "id": len(GROUPS) + 1,
+        "name": data.name,
+        "description": data.description,
+        "skill_tag": data.skill_tag,
+        "creator_id": CURRENT_USER_ID,
+        "member_count": 1,
+        "created_at": "2024-03-15T12:00:00Z"
+    }
+    GROUPS.append(new_group)
+    return new_group
+
+@app.post("/api/v1/groups/{group_id}/join")
+async def join_group(group_id: int):
+    for g in GROUPS:
+        if int(g["id"]) == group_id:
+            g["member_count"] = int(g["member_count"]) + 1
+            return g
+    raise HTTPException(status_code=404, detail="Group not found")
+
+@app.delete("/api/v1/groups/{group_id}/leave")
+async def leave_group(group_id: int):
+    for g in GROUPS:
+        if int(g["id"]) == group_id:
+            g["member_count"] = max(0, int(g["member_count"]) - 1)
+            return {"status": "success"}
+    raise HTTPException(status_code=404, detail="Group not found")
+
+@app.get("/api/v1/groups/{group_id}/posts")
+async def get_group_posts(group_id: int):
+    return GROUP_POSTS.get(group_id, [])
+
+@app.post("/api/v1/groups/{group_id}/posts")
+async def create_group_post(group_id: int, data: PostCreate):
+    if group_id not in GROUP_POSTS:
+        GROUP_POSTS[group_id] = []
+    
+    new_post = {
+        "id": len(GROUP_POSTS[group_id]) + 1,
+        "group_id": group_id,
+        "author_id": CURRENT_USER_ID,
+        "content": data.content,
+        "likes": 0,
+        "created_at": "2024-03-15T12:00:00Z"
+    }
+    GROUP_POSTS[group_id].insert(0, new_post)
+    return new_post
+
+@app.post("/api/v1/groups/posts/{post_id}/like")
+async def like_post(post_id: int):
+    # Search all groups for this post (mock simplification)
+    for group_id, posts in GROUP_POSTS.items():
+        for post in posts:
+            if int(post["id"]) == post_id:
+                post["likes"] = int(post["likes"]) + 1
+                return {"likes": post["likes"]}
+    raise HTTPException(status_code=404, detail="Post not found")

@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 const SKILL_TAGS = [
   "React JS", "TypeScript", "Python", "Node.js", "Tailwind CSS",
-  "Azure", "AI/ML", "C#", "Java", "Go", "DevOps", "UI/UX",
+  "Azure", "Machine Learning", "C#", "Java", "Go", "DevOps", "UI/UX",
 ];
 
 const schema = z.object({

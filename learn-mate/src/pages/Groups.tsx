@@ -12,7 +12,7 @@ import Sidebar from "@/components/Sidebar";
 
 const SKILL_TAGS = [
   "All", "React JS", "TypeScript", "Python", "Node.js", "Tailwind CSS",
-  "Azure", "AI/ML", "C#", "Java", "Go", "DevOps", "UI/UX",
+  "Azure", "Machine Learning", "C#", "Java", "Go", "DevOps", "UI/UX",
 ];
 
 const GroupsPage = () => {
@@ -38,9 +38,9 @@ const GroupsPage = () => {
   return (
     <PageTransition>
       <div className="min-h-[calc(100vh-4rem)] relative">
-        <div className="container-custom py-[2rem] md:py-[4rem]">
+        <div className="container-custom py-[1.5rem] md:py-[3.25rem]">
           {/* Header Section */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-[1.5rem] mb-[2.5rem]">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-[1.5rem] mb-[1.75rem]">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -72,9 +72,9 @@ const GroupsPage = () => {
             </motion.div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-[2.5rem]">
+          <div className="flex flex-col lg:flex-row gap-[2rem]">
             {/* Main Content Area - min-w-0 captures its flex context */}
-            <div className="flex-1 min-w-0 space-y-[2rem]">
+            <div className="flex-1 min-w-0 space-y-[1.5rem]">
               {/* Filter Bar */}
               <div className="glass-premium !p-[1.25rem] flex flex-col lg:flex-row items-center gap-[1rem]">
                 <div className="relative flex-1 w-full">
